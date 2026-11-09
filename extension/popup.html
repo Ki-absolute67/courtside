@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Courtside NBA Stats</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">Court<span>side</span></div>
+    <nav role="tablist">
+      <button role="tab" data-tab="scores" aria-selected="true">Scores</button>
+      <button role="tab" data-tab="standings">Standings</button>
+      <button role="tab" data-tab="myteam">My Team</button>
+      <button role="tab" data-tab="leaders">Leaders</button>
+    </nav>
+  </div>
+</header>
+<main id="main"></main>
+<footer>
+  <span>Data from ESPN's public NBA feeds. <span id="ver"></span></span>
+  <a href="https://profound-biscochitos-40ea6b.netlify.app/" target="_blank" rel="noopener">Open full site</a>
+</footer>
+<script src="popup.js"></script>
+<script src="desktop.js"></script>
+</body>
+</html>

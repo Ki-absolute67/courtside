@@ -1,0 +1,61 @@
+# Builds the Windows app on GitHub's Windows machines and publishes it as a release.
+# Run it from the Actions tab ("Release Windows app" → Run workflow) after bumping the version
+# in desktop/src-tauri/tauri.conf.json. The release is tagged v<version>, and its latest.json
+# is what installed copies check for updates.
+name: Release Windows app
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri -> target
+
+      - name: Install the Tauri CLI
+        working-directory: desktop
+        run: npm ci
+
+      - name: Build installer and publish release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          projectPath: desktop
+          tagName: v__VERSION__
+          releaseName: Courtside v__VERSION__
+          releaseBody: |
+            **Download:** `Courtside_..._x64-setup.exe` (installer, recommended) or `Courtside-portable.exe` (no install, just run it).
+
+            The first time you open it, Windows may say "Windows protected your PC". Click **More info**, then **Run anyway**. Courtside isn't paid-signed, so Windows shows this for any new app like it.
+
+            Installed copies update themselves: Courtside asks when a new version is out.
+          releaseDraft: false
+          prerelease: false
+          includeUpdaterJson: true
+
+      # Also attach the bare program as a no-install download.
+      - name: Attach portable exe
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = (Get-Content desktop/src-tauri/tauri.conf.json | ConvertFrom-Json).version
+          Copy-Item desktop/src-tauri/target/release/courtside.exe Courtside-portable.exe
+          gh release upload "v$version" Courtside-portable.exe --clobber

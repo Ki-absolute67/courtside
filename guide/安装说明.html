@@ -1,0 +1,197 @@
+<title>Courtside 安装说明</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: one readable column of step cards, Courtside's warm neutrals and basketball orange, same rounded "app" feel as the extension */
+:root {
+  --bg: #f3f1ee;
+  --surface: #ffffff;
+  --surface-2: #ebe7e2;
+  --fg: #1d1a17;
+  --muted: #776f66;
+  --accent: #d2561f;
+  --accent-soft: #fbe6db;
+  --ok: #1f7a4a;
+  --shadow: 0 1px 2px rgb(29 26 23 / .04), 0 8px 24px rgb(29 26 23 / .06);
+  --display: "Manrope", "Noto Sans SC", system-ui, sans-serif;
+  --body: "Noto Sans SC", "Manrope", system-ui, -apple-system, "PingFang SC", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120f; --surface: #1e1b18; --surface-2: #2a2622; --fg: #f1ece6; --muted: #a39a90;
+    --accent: #f07a3f; --accent-soft: #3a2417; --ok: #5fc28c; --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14120f; --surface: #1e1b18; --surface-2: #2a2622; --fg: #f1ece6; --muted: #a39a90;
+  --accent: #f07a3f; --accent-soft: #3a2417; --ok: #5fc28c; --shadow: none; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/1.7 var(--body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+a { color: var(--accent); font-weight: 600; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header { display: grid; gap: 14px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.ball { width: 44px; height: 44px; border-radius: 12px; background: #1d1a17; display: grid; place-items: center; flex: none; }
+.ball svg { width: 30px; height: 30px; }
+.name { font: 800 22px/1 var(--display); letter-spacing: -.02em; }
+.name span { color: var(--accent); }
+.ver { font: 700 12px/1 var(--display); background: var(--surface-2); color: var(--muted); padding: 4px 10px; border-radius: 999px; }
+h1 { font: 900 clamp(30px, 6vw, 42px)/1.15 var(--body); letter-spacing: -.02em; margin: 6px 0 0; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 60ch; font-size: 17px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 13px; font-weight: 500; background: var(--surface); padding: 5px 12px; border-radius: 999px; box-shadow: var(--shadow); }
+.chip b { font-weight: 700; }
+
+h2 { font: 900 22px/1.3 var(--body); margin: 8px 0 0; letter-spacing: -.01em; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: step; }
+.step { position: relative; background: var(--surface); border-radius: 20px; padding: 20px 22px 20px 74px; box-shadow: var(--shadow); counter-increment: step; }
+.step::before { content: counter(step); position: absolute; left: 22px; top: 20px; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font: 800 16px/1 var(--display); }
+.step h3 { margin: 2px 0 6px; font-size: 18px; font-weight: 700; }
+.step p { margin: 0 0 8px; }
+.step p:last-child { margin-bottom: 0; }
+.en { font: 600 13px/1 var(--display); color: var(--muted); background: var(--surface-2); padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+.note { font-size: 14px; color: var(--muted); }
+.warn { font-size: 14px; background: var(--accent-soft); color: var(--fg); padding: 10px 14px; border-radius: 12px; margin-top: 10px; }
+.warn b { color: var(--accent); }
+
+.copy-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 8px; }
+code { font: 600 15px/1 var(--mono); background: var(--bg); padding: 8px 12px; border-radius: 10px; user-select: all; }
+.copy { font: 700 13px/1 var(--display); border: 0; border-radius: 999px; padding: 9px 16px; background: var(--fg); color: var(--bg); cursor: pointer; }
+.copy:hover { opacity: .85; }
+
+/* Small drawings of the Chrome controls each step asks for */
+.mock { display: inline-flex; align-items: center; gap: 10px; background: var(--bg); padding: 8px 12px; border-radius: 12px; margin: 4px 0 8px; font: 600 13px/1 var(--display); color: var(--muted); }
+.toggle { width: 36px; height: 20px; border-radius: 999px; background: #1a73e8; position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; right: 3px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+.btn-mock { border: 1.5px solid #1a73e8; color: #1a73e8; border-radius: 6px; padding: 6px 10px; font-weight: 700; }
+.icon-mock { width: 26px; height: 26px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; font-size: 14px; }
+
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.feat { background: var(--surface); border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow); min-width: 0; }
+.feat h3 { margin: 0 0 4px; font: 800 16px/1.3 var(--display); }
+.feat h3 small { font: 600 12px var(--body); color: var(--muted); margin-left: 6px; }
+.feat p { margin: 0; font-size: 14px; color: var(--muted); }
+
+.update { background: var(--surface); border-radius: 20px; padding: 20px 22px; box-shadow: var(--shadow); display: grid; gap: 8px; }
+.update ol { margin: 0; padding-left: 22px; }
+
+.faq { display: grid; gap: 8px; }
+details { background: var(--surface); border-radius: 16px; padding: 14px 18px; box-shadow: var(--shadow); }
+summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font: 800 18px/1 var(--display); color: var(--accent); }
+details[open] summary::after { content: "–"; }
+details p { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
+details p b { color: var(--fg); }
+footer { font-size: 13px; color: var(--muted); text-align: center; }
+@media (max-width: 480px) { .step { padding: 64px 18px 18px; } .step::before { top: 18px; left: 18px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="ball" aria-hidden="true"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#d2561f"/><g fill="none" stroke="#1d1a17" stroke-width="20" stroke-linecap="round"><circle cx="256" cy="256" r="200"/><line x1="56" y1="256" x2="456" y2="256"/><line x1="256" y1="56" x2="256" y2="456"/><path d="M115 115 C 190 180, 190 332, 115 397"/><path d="M397 115 C 322 180, 322 332, 397 397"/></g></svg></span>
+      <span class="name">Court<span>side</span></span>
+      <span class="ver">v1.1.0</span>
+    </div>
+    <h1>把 Courtside 装进你的 Chrome</h1>
+    <p class="lede">Courtside 是一个 Chrome 浏览器插件。点一下工具栏上的篮球图标，就能看到 NBA 实时比分、排名、你关注的球队和数据榜。安装大约两分钟，不用注册，也不花钱。</p>
+    <div class="chips">
+      <span class="chip">适用于 <b>电脑上的 Chrome / Edge</b></span>
+      <span class="chip">需要 <b>联网</b></span>
+      <span class="chip">数据来自 <b>ESPN</b></span>
+    </div>
+  </header>
+
+  <section>
+    <h2>安装步骤</h2>
+    <ol class="steps">
+      <li class="step">
+        <h3>解压压缩包</h3>
+        <p>双击收到的 <b>Courtside-v1.1.0.zip</b>，会得到一个叫 <b>Courtside</b> 的文件夹和这份说明。</p>
+        <p>把 <b>Courtside</b> 文件夹放到一个不会被误删的地方，比如「文稿 / Documents」。</p>
+        <p class="warn"><b>装好以后不要删除或移动这个文件夹。</b>Chrome 每次都是从这里读取插件的，文件夹没了插件就打不开了。</p>
+      </li>
+      <li class="step">
+        <h3>打开扩展程序页面</h3>
+        <p>在 Chrome 地址栏粘贴下面这串地址，按回车：</p>
+        <div class="copy-row"><code id="url">chrome://extensions</code><button class="copy" id="copyBtn" type="button">复制</button></div>
+        <p class="note">用 Edge 浏览器的话，地址是 <code>edge://extensions</code>。这类地址点链接打不开，只能粘贴到地址栏。</p>
+      </li>
+      <li class="step">
+        <h3>打开「开发者模式」</h3>
+        <p>在页面<b>右上角</b>找到这个开关，把它打开：</p>
+        <span class="mock"><span>开发者模式</span><span class="en">Developer mode</span><span class="toggle" aria-hidden="true"></span></span>
+        <p class="note">打开后，页面左上角会多出几个按钮。</p>
+      </li>
+      <li class="step">
+        <h3>加载插件</h3>
+        <p>点左上角的这个按钮：</p>
+        <span class="mock"><span class="btn-mock">加载已解压的扩展程序</span><span class="en">Load unpacked</span></span>
+        <p>在弹出的窗口里，选中第 1 步的 <b>Courtside</b> 文件夹，点「选择」。列表里出现 <b>Courtside NBA Stats</b> 的卡片，就说明装好了。</p>
+      </li>
+      <li class="step">
+        <h3>固定到工具栏</h3>
+        <p>点 Chrome 右上角的 <b>拼图图标</b>，找到 Courtside，点旁边的 <b>图钉</b>：</p>
+        <span class="mock"><span class="icon-mock" aria-hidden="true">🧩</span><span>→</span><span>Courtside NBA Stats</span><span class="icon-mock" aria-hidden="true">📌</span></span>
+        <p class="note">之后工具栏上会一直显示橙色篮球图标，点一下就能打开。</p>
+      </li>
+      <li class="step">
+        <h3>选择你的球队</h3>
+        <p>打开插件，点顶部的 <b>My Team</b>，选你关注的一支或几支球队，点 <b>Done</b>。以后想改，点 <b>Edit teams</b> 就行。</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>能看什么</h2>
+    <div class="features">
+      <div class="feat"><h3>Scores<small>比分</small></h3><p>每天的比赛和实时比分。点进一场比赛，能看两队数据对比、场上五人站位和替补名单。</p></div>
+      <div class="feat"><h3>Standings<small>排名</small></h3><p>常规赛排名，还有 NBA Cup 小组赛和淘汰赛，以及季后赛对阵图（可以看全部，也可以只看东部或西部）。</p></div>
+      <div class="feat"><h3>My Team<small>我的球队</small></h3><p>你关注的球队：最近和接下来的比赛、按月份的赛程、全队球员数据和主教练。</p></div>
+      <div class="feat"><h3>Leaders<small>数据榜</small></h3><p>得分、篮板、助攻等各项数据的联盟排名，点表头可以换排序。</p></div>
+    </div>
+    <p class="note">你的球队在比赛时，工具栏图标上会出现球队缩写（比如 LAL）。打开一次插件，提醒就会消失。</p>
+  </section>
+
+  <section class="update">
+    <h2>收到新版本时怎么更新</h2>
+    <ol>
+      <li>解压新的压缩包，用里面的文件<b>替换</b>你原来 Courtside 文件夹里的文件。</li>
+      <li>打开 <code>chrome://extensions</code>，点 Courtside 卡片上的 <b>刷新 ↻</b> 按钮。</li>
+    </ol>
+    <p class="note">插件底部会显示版本号，比如 v1.1.0，可以用来确认更新成功了。</p>
+  </section>
+
+  <section class="faq">
+    <h2>常见问题</h2>
+    <details><summary>Chrome 提示「请停用开发者模式下的扩展程序」怎么办？</summary><p>点「保留」或者直接关掉提示就行。自己安装的插件都会有这个提示，不影响使用。</p></details>
+    <details><summary>加载时提示「清单文件缺失或不可读」？</summary><p>说明选错了文件夹。要选的是<b>直接装着 manifest.json 的那个文件夹</b>。有时解压后会多套一层同名文件夹，点进去一层再选就好。</p></details>
+    <details><summary>打开后一直显示加载失败？</summary><p>检查一下网络。插件的数据都是打开时从 ESPN 实时获取的，没网就加载不出来。</p></details>
+    <details><summary>手机上能用吗？</summary><p>插件只能装在电脑的 Chrome 或 Edge 上。手机可以打开网页版：<b>profound-biscochitos-40ea6b.netlify.app</b>（网页版功能比插件少一些）。</p></details>
+    <details><summary>安全吗？会收集我的信息吗？</summary><p>不会。插件只读取 ESPN 公开的 NBA 数据，不需要账号，也不收集任何个人信息。它只申请了三项权限：访问 ESPN 的数据、定时刷新比分（用来更新图标提醒），以及保存你选的球队。</p></details>
+    <details><summary>怎么卸载？</summary><p>打开 <code>chrome://extensions</code>，在 Courtside 的卡片上点「移除 / Remove」，然后删掉 Courtside 文件夹就行。</p></details>
+  </section>
+
+  <footer>Courtside v1.1.0 · 非官方插件，与 NBA 和 ESPN 无关</footer>
+</div>
+
+<script>
+document.getElementById("copyBtn").addEventListener("click", async e => {
+  const btn = e.currentTarget, text = document.getElementById("url").textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = "已复制";
+  } catch {
+    // Clipboard blocked: select the text so it can be copied by hand.
+    const r = document.createRange(); r.selectNodeContents(document.getElementById("url"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    btn.textContent = "已选中，按 ⌘C 复制";
+  }
+  setTimeout(() => { btn.textContent = "复制"; }, 2000);
+});
+</script>
