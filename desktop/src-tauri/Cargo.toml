@@ -1,6 +1,6 @@
 [package]
 name = "courtside"
-version = "1.1.0"
+version = "1.1.1"
 description = "Courtside NBA Stats for Windows"
 edition = "2021"
 

@@ -3,6 +3,8 @@
 (() => {
   const T = window.__TAURI__;
   if (!T) return;
+  // Resizable window instead of the extension's fixed-size popup (see the html.desktop rules in popup.css).
+  document.documentElement.classList.add("desktop");
   const SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard";
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
   const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };

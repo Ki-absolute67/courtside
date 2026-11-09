@@ -352,3 +352,18 @@ tr.career td { font-weight: 800; background: var(--bg); }
 
 footer { padding: 0 24px 18px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; font-weight: 600; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Desktop app (Windows): the window can be resized, so drop the popup's fixed 760px size, keep content
+   in a centred column, and let card grids add columns as the window gets wider. desktop.js sets the class. */
+html.desktop, html.desktop body { width: auto; }
+html.desktop body { max-height: none; min-width: 740px; }
+html.desktop .bar, html.desktop main, html.desktop footer { max-width: 1180px; margin-left: auto; margin-right: auto; }
+html.desktop .games { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+html.desktop .team-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+@media (min-width: 1000px) {
+  /* Wide windows: brackets and the court scale up evenly to use the room. */
+  html.desktop .mirror-wrap { zoom: 1.2; }
+  html.desktop .mirror-wrap.cup { zoom: 1.35; }
+  html.desktop .mirror.conf-view { zoom: 1.2; }
+  html.desktop .court { width: 600px; }
+}
