@@ -367,3 +367,10 @@ html.desktop .team-grid { grid-template-columns: repeat(auto-fill, minmax(210px,
   html.desktop .mirror.conf-view { zoom: 1.2; }
   html.desktop .court { width: 600px; }
 }
+
+/* Traded seasons: one merged row, team route in small type, per-team split on click. */
+tr.traded { cursor: pointer; }
+tr.traded small { font-size: 0.82em; letter-spacing: 0.01em; white-space: nowrap; }
+tr.traded .caret { display: inline-block; margin-left: 5px; font-size: 0.75em; color: var(--muted, #888); transition: transform .15s; }
+tr.traded.open .caret { transform: rotate(90deg); }
+tr.split td { font-size: 0.86em; color: var(--muted, #888); padding-top: 4px; padding-bottom: 4px; }

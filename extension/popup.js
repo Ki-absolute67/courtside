@@ -30,19 +30,34 @@ const views = { scores: showScores, standings: showStandings, myteam: showMyTeam
 let here = ["scores"];
 const trail = [];
 function go(view, arg) {
-  if (TABS.includes(view)) trail.length = 0; else trail.push(here);
+  // Remember how far down the page was, so Back returns to the same spot.
+  if (TABS.includes(view)) trail.length = 0; else trail.push([here[0], here[1], scrollY]);
   here = [view, arg];
   render();
 }
-function back() { here = trail.pop() || ["scores"]; render(); }
-function render() {
+function back() { here = trail.pop() || ["scores"]; render(here[2] || 0); }
+let restoreRun = 0;
+function render(y = 0) {
   const [view, arg] = here;
   const tab = TABS.includes(view) ? view : trail[0]?.[0];
   document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
   clearTimeout(gameTimer);
   scrollTo(0, 0);
   views[view](arg);
+  // Pages fill in after their data arrives (usually from cache), so keep trying until the page is
+  // tall enough to scroll that far, for up to 3 seconds, unless the viewer scrolls first.
+  const run = ++restoreRun;
+  if (!y) return;
+  const until = Date.now() + 3000;
+  const step = () => {
+    if (run !== restoreRun) return;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    scrollTo(0, Math.min(y, max));
+    if (max < y && Date.now() < until) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
+for (const ev of ["wheel", "touchstart", "keydown", "mousedown"]) addEventListener(ev, () => { restoreRun++; }, { passive: true });
 const backBtn = () => trail.length ? `<button class="btn back" data-back>&larr; Back</button>` : "";
 // Anything marked data-player / data-team / data-game opens that page: whole table rows and cards as well as buttons.
 // The innermost link wins, so a player name inside a game card opens the player, not the game.
@@ -1055,7 +1070,20 @@ async function showPlayer(id) {
     ]);
     const a = bio.athlete;
     const avg = stats?.categories?.find(c => c.name === "averages");
-    const seasons = avg ? [...avg.statistics].reverse() : [];
+    // ESPN lists a traded player's season as one row per team plus a "Totals" row (no teamId).
+    // Show one row per season with the totals; the per-team rows open underneath on click.
+    const abbr = s => stats.teams?.[s.teamSlug]?.abbreviation || "";
+    const bySeason = [];
+    for (const s of avg?.statistics || []) {
+      let g = bySeason.find(x => x.year === s.season.year);
+      if (!g) bySeason.push(g = { year: s.season.year, parts: [], total: null });
+      if (s.teamId) g.parts.push(s); else g.total = s;
+    }
+    const seasons = bySeason.map(g => {
+      if (g.parts.length < 2) return { ...(g.parts[0] || g.total), label: g.parts[0] ? abbr(g.parts[0]) : "", parts: [] };
+      const t = g.parts.map(abbr);
+      return { ...(g.total || g.parts.at(-1)), label: t.length > 2 ? `${t[0]}–…–${t.at(-1)}` : t.join("–"), parts: g.parts };
+    }).reverse();
     const latest = seasons[0];
     const pick = (row, label) => row?.stats?.[avg.labels.indexOf(label)] ?? "–";
     const fact = (k, v) => v ? `<span>${k} <b>${esc(v)}</b></span>` : "";
@@ -1077,9 +1105,17 @@ async function showPlayer(id) {
         <div class="table-wrap"><table>
           <thead><tr><th class="left">Season</th><th class="left">Team</th>${avg.labels.map(l => `<th>${esc(l)}</th>`).join("")}</tr></thead>
           <tbody>
-            ${seasons.map(s => `<tr><td class="hl">${esc(s.season.displayName)}</td><td class="left muted">${esc(stats.teams?.[s.teamSlug]?.abbreviation || "")}</td>${s.stats.map(v => `<td>${esc(v)}</td>`).join("")}</tr>`).join("")}
+            ${seasons.map((s, i) => `<tr${s.parts.length ? ` class="traded" data-split="${i}" tabindex="0" title="Show each team"` : ""}><td class="hl">${esc(s.season.displayName)}${s.parts.length ? `<span class="caret">▸</span>` : ""}</td><td class="left muted">${s.parts.length ? `<small>${esc(s.label)}</small>` : esc(s.label)}</td>${s.stats.map(v => `<td>${esc(v)}</td>`).join("")}</tr>${s.parts.map(p => `<tr class="split" data-of="${i}" hidden><td></td><td class="left muted">${esc(abbr(p))}</td>${p.stats.map(v => `<td>${esc(v)}</td>`).join("")}</tr>`).join("")}`).join("")}
             ${avg.totals ? `<tr class="career"><td>Career</td><td></td>${avg.totals.map(v => `<td>${esc(v)}</td>`).join("")}</tr>` : ""}
           </tbody></table></div>` : `<p class="status">No NBA regular-season stats yet for this player.</p>`}`;
+    main.querySelectorAll("tr[data-split]").forEach(tr => {
+      const toggle = () => {
+        const open = tr.classList.toggle("open");
+        main.querySelectorAll(`tr[data-of="${tr.dataset.split}"]`).forEach(r => { r.hidden = !open; });
+      };
+      tr.onclick = toggle;
+      tr.onkeydown = e => { if (e.key === "Enter") toggle(); };
+    });
     wireLinks(main);
   } catch (e) { main.innerHTML = `<div class="toolbar">${backBtn()}</div>${failed(e)}`; wireLinks(main); }
 }

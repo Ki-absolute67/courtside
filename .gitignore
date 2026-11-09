@@ -11,3 +11,4 @@ desktop/src-tauri/gen/
 releases/
 
 .DS_Store
+.claude/
