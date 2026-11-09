@@ -17,10 +17,13 @@ Live NBA scores, standings, the NBA Cup and playoff brackets, your teams' schedu
 
 | Folder | What it is |
 |---|---|
-| `extension/` | The Chrome / Edge extension. Its popup is also the Windows app's window. |
+| `extension/` | The Chrome / Edge extension. Its popup is also the Windows app's window, so the screens live here once. |
 | `desktop/` | The Windows app (Tauri), which wraps `extension/` with a tray icon, notifications and auto-update. |
-| `index.html`, `sw.js`, `manifest.webmanifest`, `icons/` | The original web version. |
+| `web/` | The original web version (installable PWA). To update the Netlify site, drag this folder onto its Deploys page. |
 | `guide/` | Install guide for the extension. |
+| `.github/workflows/` | Builds and publishes the Windows app. |
+
+Not in the repo: `releases/` holds the zips sent to friends, and `.tools/` holds local tools and the update signing key (keep a backup of `.tools/keys`; without it, installed copies can't be updated).
 
 ## Releasing a new Windows version
 

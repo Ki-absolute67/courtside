@@ -6,7 +6,8 @@ desktop/node_modules/
 desktop/src-tauri/target/
 desktop/src-tauri/gen/
 
-# Packages sent to friends
+# Packages sent to friends (kept in releases/)
 *.zip
+releases/
 
 .DS_Store
